@@ -54,6 +54,3 @@ class UserRegistration:
         while not input_value:
             input_value = input("Please enter value in empty value is not supported")
         return input_value
-
-    def log_in_with_user(self):
-        pass

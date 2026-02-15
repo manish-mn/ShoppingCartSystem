@@ -6,3 +6,5 @@ class User:
         self.email,
         self.username
         self.phoneNo
+        self.shopingCart = []
+        self.OrderedProducts = []
