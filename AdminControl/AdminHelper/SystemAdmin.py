@@ -36,8 +36,8 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
                 print(f"Incorrect password.")
                 return self.logged_in_Admin
         else:
-            print("Admin does not exist")
-            self.logged_in_Admin
+            print(f"Admin with user name {user_name} does not exist")
+            return self.logged_in_Admin
 
     def add_admin(self):
         admin = Admin()
@@ -45,6 +45,7 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
         admin.user_name = self.validate_user_name()
         admin.password = input("Enter your password\n")
         self.list_of_Admin.append(admin)
+        return True
 
     def validate_user_name(self):
         user_name_exists = True
@@ -57,28 +58,6 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
             else:
                 user_name_exists = False
         return user_name
-
-    def admin_menu(self):
-        while True:
-            print("Welcome to admin control.")
-            if self.verify_admin_list():
-                self.verify_admin_credentials_and_log_in(
-                    input("Please enter your username.\n"),
-                    input("Please enter your password.\n"),
-                )
-                break
-            else:
-                user_input = input(
-                    "Looks like there are no admins in the system. Would you like to register yourself. ?\nPress y for yes and n for no\n"
-                )
-                if user_input.lower() == "y" or user_input.lower() == "n":
-                    if user_input.lower() == "y":
-                        self.add_admin()
-                    else:
-                        break
-                else:
-                    print("Invalid input.")
-                    break
 
     def list_product_with_quantity(self):
         if any(self.product_list):
@@ -94,10 +73,10 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
 
     def add_product(self):
         product = Product()
-        product.product_name = input("Enter your product name")
-        product.product_desciption = input("Enter your product description")
-        product.product_price = input("Enter your Product price")
-        product.product_quantity = input("Enter your product quantity")
+        product.product_name = input("Enter your product name\n")
+        product.product_desciption = input("Enter your product description\n")
+        product.product_price = input("Enter your Product price\n")
+        product.product_quantity = input("Enter your product quantity\n")
         if any(self.product_list):
             print(
                 "Please enter product id. Please choose a unique id. Here is the product list with ids"
@@ -118,7 +97,7 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
                     break
         else:
             product.product_id = 1
-        product.modified_by = next(self.logged_in_Admin).Name
+        product.modified_by = next(iter(self.logged_in_Admin)).Name
         self.product_list.append(product)
 
     def modify_product(self):
@@ -162,3 +141,59 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
 
         else:
             print("No products are there to add please add product")
+
+    def admin_menu(self):
+        print("Welcome to admin control.")
+        if self.log_in_with_admin():
+            while True:
+                print(
+                    "Press the following numbers for performing action:\n"
+                    "1. For adding product\n"
+                    "2. For Modifying product.\n"
+                    "3. View all products \n"
+                    "4. To exit"
+                )
+                option = input()
+                match option:
+                    case "1":
+                        self.add_product()
+                    case "2":
+                        self.modify_product()
+                    case "3":
+                        self.list_product_with_quantity()
+                    case "4":
+                        break
+                    case _:
+                        print("Invalid option")
+                        break
+        else:
+            print("Admin login/registration failed")
+
+    def log_in_with_admin(self):
+        logged_in_with_admin = False
+        while True:
+            if self.verify_admin_list():
+                if any(
+                    self.verify_admin_credentials_and_log_in(
+                        input("Please enter your username.\n"),
+                        input("Please enter your password.\n"),
+                    )
+                ):
+                    return True
+                else:
+                    print("Unable to login due to wrong creds.")
+                    False
+            else:
+                user_input = input(
+                    "Looks like there are no admins in the system. Would you like to register yourself. ?\nPress y for yes and n for no\n"
+                )
+                if user_input.lower() == "y" or user_input.lower() == "n":
+                    if user_input.lower() == "y":
+                        self.add_admin()
+                        logged_in_with_admin = True
+                    else:
+                        break
+                else:
+                    print("Invalid input.")
+                    break
+        return logged_in_with_admin
