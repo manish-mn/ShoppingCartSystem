@@ -10,18 +10,18 @@ class UserRegistration:
             "Welcome to our shopping app. Please provide details to register yourself as a user :"
         )
         user = User()
-        user.name = self.check_null_empty(input("Please enter your name")).lower()
+        user.name = self.check_null_empty(input("Please enter your name\n")).lower()
         user.username = self.validate_user_user_name(
-            self.check_null_empty(input("Please enter your user id"))
+            self.check_null_empty(input("Please enter your user name\n"))
         ).lower()
         user.email = self.validate_user_email(
-            self.check_null_empty(input("Please enter your user email"))
+            self.check_null_empty(input("Please enter your user email\n"))
         ).lower()
         user.phoneNo = self.check_null_empty(
-            input("Please enter your phone number")
+            input("Please enter your phone number\n")
         ).lower()
         user.password = self.check_null_empty(
-            input("Please enter your password")
+            input("Please enter your password\n")
         ).lower()
         user.userId = len(self.list_of_users) + 1
         self.list_of_users.append(user)
@@ -37,7 +37,7 @@ class UserRegistration:
         while any(
             input_value.lower() == user.email.lower() for user in self.list_of_users
         ):
-            input_value = input("Please enter the email this email already exists")
+            input_value = input("Please enter the email this email already exists\n")
         return input_value
 
     def validate_user_user_name(self, input_value):
@@ -45,11 +45,11 @@ class UserRegistration:
             input_value.lower() == user.username.lower() for user in self.list_of_users
         ):
             input_value = input(
-                "Please enter the user name again this user name already exists"
+                "Please enter the user name again this user name already exists\n"
             )
-        return input
+        return input_value
 
     def check_null_empty(self, input_value):
         while not input_value:
-            input_value = input("Please enter value in empty value is not supported")
+            input_value = input("Please enter value in empty value is not supported\n")
         return input_value

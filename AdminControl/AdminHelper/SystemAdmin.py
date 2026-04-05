@@ -106,7 +106,7 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
         if any(self.product_list):
             while True:
                 self.list_product_with_quantity()
-                product_id = int(input("Enter The product id which you want to modify"))
+                product_id = int(input("Enter The product id which you want to modify\n"))
                 if any(filter(lambda x: x.product_id == product_id, self.product_list)):
                     product = next(filter(lambda x: x.product_id == product_id, self.product_list))
                     while True:
@@ -114,31 +114,31 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
                             "Please 1 to update Name\n"
                             "Press 2 to update description\n"
                             "Press 3 to update Quantity\n"
-                            "Press 4 to update Price"
+                            "Press 4 to update Price\n"
                         )
                         option = input()
                         if option == "1":
-                            product.product_name = input("Enter the updated Name")
+                            product.product_name = input("Enter the updated Name\n")
                             product.modified_by = next(iter(self.logged_in_Admin)).Name
                         elif option == "2":
                             product.product_description = input(
-                                "Enter the updated description"
+                                "Enter the updated description\n"
                             )
                             product.modified_by = next(iter(self.logged_in_Admin)).Name
                         elif option == "3":
                             product.product_quantity = int(input(
-                                "Enter the updated quantity"
+                                "Enter the updated quantity\n"
                             ))
                             product.modified_by = next(iter(self.logged_in_Admin)).Name
                         elif option == "4":
-                            product.product_price = float(input("Enter the updated price"))
+                            product.product_price = float(input("Enter the updated price\n"))
                             product.modified_by = next(iter(self.logged_in_Admin)).Name
                         else:
                             print("Invalid option")
                         break
                 else:
                     print(f"No product with id {product_id} exits")
-                    break
+                break
 
         else:
             print("No products are there to add please add product")

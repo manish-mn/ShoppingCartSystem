@@ -11,13 +11,13 @@ class UserOperations:
     def validate_login_user_name(self, input_value):
         while any(input_value != user.username for user in self.list_of_users):
             input_value = input(
-                "Please enter the user name again this user name doesn't exists"
+                "Please enter the user name again this user name doesn't exists\n"
             )
         return input_value
 
     def validate_password_for_login(self, input_password, user_details):
         while input_password != user_details.password:
-            input_password = input("Please enter valid password this is not matching")
+            input_password = input("Please enter valid password this is not matching\n")
         return True
 
     def log_in_with_user(self):
@@ -26,14 +26,14 @@ class UserOperations:
             self.user_registration_obj.add_user()
             self.list_of_users = self.user_registration_obj.list_of_users  # update
         user_name = self.validate_login_user_name(
-            input("Please enter your user name.")
+            input("Please enter your user name.\n")
         )
         user_details = next(
             filter(lambda x: user_name == x.username, self.list_of_users)
         )
 
         if self.validate_password_for_login(
-            input("Please enter your password"), user_details
+            input("Please enter your password\n"), user_details
         ):
             print(f"User logged in with username {user_details.username}")
             self.logged_in_user = user_details
@@ -54,11 +54,14 @@ class UserOperations:
                     print(f"The product was modified by {product.modified_by}")
             else:
                 print("No products available")
+                return False
+            return True
         else:
             print("No products are available.")
+            return False
 
     def get_filtered_product_list(self):
-        return filter(lambda x: x.product_quantity > 0, self.product_list)
+        return list(filter(lambda x: x.product_quantity > 0, self.product_list))
 
     def validate_product_id_and_quantity(self, input_product_id, input_quantity):
         while not any(
@@ -82,22 +85,25 @@ class UserOperations:
         return {input_product_id: input_quantity}
 
     def add_product_to_cart(self):
-        self.list_product_with_quantity()
-        product_id = int(input("The product id which you want to add to cart"))
-        quantity = int(input("The quantity you want to add"))
-        product_details_with_quantity = self.validate_product_id_and_quantity(
-            product_id, quantity
-        )
-        product_id = next(iter(product_details_with_quantity))
-        quantity = next(iter(product_details_with_quantity.values()))
-        product = next(p for p in self.product_list if p.product_id == product_id)
-        self.logged_in_user.shopingCart.append({'product': product, 'quantity': quantity})
+        if self.list_product_with_quantity():
+            product_id = int(input("The product id which you want to add to cart\n"))
+            quantity = int(input("The quantity you want to add\n"))
+            product_details_with_quantity = self.validate_product_id_and_quantity(
+                product_id, quantity
+            )
+            product_id = next(iter(product_details_with_quantity))
+            quantity = next(iter(product_details_with_quantity.values()))
+            product = next(p for p in self.product_list if p.product_id == product_id)
+            self.logged_in_user.shopingCart.append(
+                {"product": product, "quantity": quantity}
+            )
+            product.product_quantity -= quantity
 
     def purchase_products(self):
         if any(self.logged_in_user.shopingCart):
             for item in self.logged_in_user.shopingCart:
-                product = item['product']
-                quantity = item['quantity']
+                product = item["product"]
+                quantity = item["quantity"]
                 print(f"The product id is {product.product_id}")
                 print(f"The product name is {product.product_name}")
                 print(f"The product description is {product.product_description}")
@@ -107,11 +113,9 @@ class UserOperations:
                 "Do you want to purchase the products ?\nType y for yes n for no"
             )
             if user_input.lower() == "y":
-                for item in self.logged_in_user.shopingCart:
-                    product = item['product']
-                    quantity = item['quantity']
-                    product.product_quantity -= quantity
-                self.logged_in_user.OrderedProducts = self.logged_in_user.shopingCart.copy()
+                self.logged_in_user.OrderedProducts = (
+                    self.logged_in_user.shopingCart.copy()
+                )
                 self.logged_in_user.shopingCart = []
             elif user_input.lower() == "n":
                 print("We will see you again once you have made up your")
