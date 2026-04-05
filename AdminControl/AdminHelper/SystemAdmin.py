@@ -64,7 +64,7 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
             for product in self.product_list:
                 print(f"The product id is {product.product_id}")
                 print(f"The product name is {product.product_name}")
-                print(f"The product description is {product.product_desciption}")
+                print(f"The product description is {product.product_description}")
                 print(f"The product quantity is {product.product_quantity}")
                 print(f"The product price is {product.product_price}")
                 print(f"The product was modified by {product.modified_by}")
@@ -74,27 +74,29 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
     def add_product(self):
         product = Product()
         product.product_name = input("Enter your product name\n")
-        product.product_desciption = input("Enter your product description\n")
-        product.product_price = input("Enter your Product price\n")
-        product.product_quantity = input("Enter your product quantity\n")
+        product.product_description = input("Enter your product description\n")
+        product.product_price = float(input("Enter your Product price\n"))
+        product.product_quantity = int(input("Enter your product quantity\n"))
         if any(self.product_list):
             print(
                 "Please enter product id. Please choose a unique id. Here is the product list with ids"
             )
             self.list_product_with_quantity()
             while True:
-                product_id = input()
-                if any(
-                    filter(
-                        lambda product: product.product_id == product_id,
-                        self.product_list,
-                    )
-                ):
-                    print("Product id already exist re-enter")
-                    product_id = input()
-                else:
-                    product.product_id = product_id
-                    break
+                try:
+                    product_id = int(input())
+                    if any(
+                        filter(
+                            lambda product: product.product_id == product_id,
+                            self.product_list,
+                        )
+                    ):
+                        print("Product id already exist re-enter")
+                    else:
+                        product.product_id = product_id
+                        break
+                except ValueError:
+                    print("Please enter a valid integer for product id")
         else:
             product.product_id = 1
         product.modified_by = next(iter(self.logged_in_Admin)).Name
@@ -104,9 +106,9 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
         if any(self.product_list):
             while True:
                 self.list_product_with_quantity()
-                product_id = input("Enter The product id which you want to modify")
-                if any(filter(lambda x: x == product_id, self.product_list)):
-                    product = next(filter(lambda x: x == product_id, self.product_list))
+                product_id = int(input("Enter The product id which you want to modify"))
+                if any(filter(lambda x: x.product_id == product_id, self.product_list)):
+                    product = next(filter(lambda x: x.product_id == product_id, self.product_list))
                     while True:
                         print(
                             "Please 1 to update Name\n"
@@ -115,25 +117,24 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
                             "Press 4 to update Price"
                         )
                         option = input()
-                        match option:
-                            case "1":
-                                product.product_name = input("Enter the updated Name")
-                                product.modified_by = next(self.logged_in_Admin).Name
-                            case "2":
-                                product.product_desciption = input(
-                                    "Enter the updated description"
-                                )
-                                product.modified_by = next(self.logged_in_Admin).Name
-                            case "3":
-                                product.product_quantity = input(
-                                    "Enter the updated quantity"
-                                )
-                                product.modified_by = next(self.logged_in_Admin).Name
-                            case "4":
-                                product.product_price = input("Enter the updated price")
-                                product.modified_by = next(self.logged_in_Admin).Name
-                            case _:
-                                print("Invalid option")
+                        if option == "1":
+                            product.product_name = input("Enter the updated Name")
+                            product.modified_by = next(iter(self.logged_in_Admin)).Name
+                        elif option == "2":
+                            product.product_description = input(
+                                "Enter the updated description"
+                            )
+                            product.modified_by = next(iter(self.logged_in_Admin)).Name
+                        elif option == "3":
+                            product.product_quantity = int(input(
+                                "Enter the updated quantity"
+                            ))
+                            product.modified_by = next(iter(self.logged_in_Admin)).Name
+                        elif option == "4":
+                            product.product_price = float(input("Enter the updated price"))
+                            product.modified_by = next(iter(self.logged_in_Admin)).Name
+                        else:
+                            print("Invalid option")
                         break
                 else:
                     print(f"No product with id {product_id} exits")
@@ -154,18 +155,16 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
                     "4. To exit"
                 )
                 option = input()
-                match option:
-                    case "1":
-                        self.add_product()
-                    case "2":
-                        self.modify_product()
-                    case "3":
-                        self.list_product_with_quantity()
-                    case "4":
-                        break
-                    case _:
-                        print("Invalid option")
-                        break
+                if option == "1":
+                    self.add_product()
+                elif option == "2":
+                    self.modify_product()
+                elif option == "3":
+                    self.list_product_with_quantity()
+                elif option == "4":
+                    break
+                else:
+                    print("Invalid option")
         else:
             print("Admin login/registration failed")
 
@@ -191,6 +190,8 @@ class SystemAdmin(AbstractSystemAdminOperations, AbstractSystemAdminProductInfor
                     if user_input.lower() == "y":
                         self.add_admin()
                         logged_in_with_admin = True
+                        self.logged_in_Admin[self.list_of_Admin[-1]] = True
+                        break
                     else:
                         break
                 else:

@@ -1,4 +1,4 @@
-from AdminControl.Modals import User
+from AdminControl.Modals.User import User
 
 
 class UserRegistration:
@@ -21,18 +21,17 @@ class UserRegistration:
             input("Please enter your phone number")
         ).lower()
         user.password = self.check_null_empty(
-            input("Please enter your phone number")
+            input("Please enter your password")
         ).lower()
         user.userId = len(self.list_of_users) + 1
         self.list_of_users.append(user)
         print(f"User added successfully with user id - {user.userId}")
 
     def validate_user_creds(self, cred_type, input):
-        match cred_type:
-            case "email":
-                return self.validate_user_email(input)
-            case "username":
-                return self.validate_user_user_name(input)
+        if cred_type == "email":
+            return self.validate_user_email(input)
+        elif cred_type == "username":
+            return self.validate_user_user_name(input)
 
     def validate_user_email(self, input_value):
         while any(
